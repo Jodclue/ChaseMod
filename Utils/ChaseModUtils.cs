@@ -48,6 +48,9 @@ public static class ChaseModUtils
     }
     public static void ChatAllPrefixed(string message)
     {
-        Server.PrintToChatAll($" {ChatColors.Magenta}HNS {ChatColors.Grey}| {message}");
+        foreach (var controller in Utilities.GetPlayers())
+        {
+            ChatPrefixed(controller, message);
+        }
     }
 }
