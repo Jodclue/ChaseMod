@@ -1,0 +1,38 @@
+name: Build ChaseMod
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x  # CSS usa .NET 8
+
+      - name: Restore
+        run: dotnet restore ./ChaseMod.sln
+
+      - name: Build (Release)
+        run: dotnet build ./ChaseMod.sln --configuration Release --no-restore
+
+      - name: Publish plugin
+        run: |
+          dotnet publish ./ChaseMod.csproj \
+            --configuration Release \
+            --output ./publish/ChaseMod
+          mkdir -p out/ChaseMod
+          cp -r publish/ChaseMod/* out/ChaseMod/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChaseMod-Release
+          path: out/ChaseMod
